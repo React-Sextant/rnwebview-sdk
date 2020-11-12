@@ -1,6 +1,7 @@
 import React from 'react'
 import {
     BackHandler,
+    DeviceEventEmitter
 } from 'react-native'
 import { WebView } from 'react-native-webview';
 
@@ -10,8 +11,10 @@ class Webview extends React.Component {
         super(props);
         this.rn = {
             "BackHandler":BackHandler,
+            "DeviceEventEmitter":DeviceEventEmitter,
         };
-        this.hardwareBackPress = this.hardwareBackPress.bind(this);
+        this.payload = "";
+        this.dispatchEvent = this.dispatchEvent.bind(this);
     }
 
     render(){
@@ -25,19 +28,21 @@ class Webview extends React.Component {
 
     onMessage=(event)=>{
         try{
+            this.payload = event.nativeEvent.data;
+            let a = this.payload.split("|");
+
             /**
              * eg: "BackHandler|addEventListener|hardwareBackPress"
              * **/
-            let a = JSON.parse(event.nativeEvent.data).split("|");
-            this.rn[a[0]][a[1]](a[2],this[a[2]])
+            this.rn[a[0]][a[1]](a[2],this.dispatchEvent)
 
         }catch (e) {
 
         }
     };
 
-    hardwareBackPress(){
-        this.refs.webview.postMessage(JSON.stringify([{type:"addEventListener",event:"hardwareBackPress"},...arguments]));
+    dispatchEvent(){
+        this.refs.webview.postMessage(JSON.stringify([...arguments,this.payload]))
     }
 }
 

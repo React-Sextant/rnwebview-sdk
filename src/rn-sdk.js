@@ -16,9 +16,7 @@ export const rn = {
         hardwareBackPress:[]
     },
     addEventListener:function(eventName,handler){
-        window.ReactNativeWebView.postMessage(JSON.stringify(
-            this.type+"|addEventListener|"+eventName.toString()
-        ));
+        window.ReactNativeWebView.postMessage(this.type+"|addEventListener|"+eventName.toString());
 
         rn.ReactNativeContext.addEventListener("message",handler);
         this.listens[eventName].push(eventName)
@@ -30,19 +28,21 @@ export const rn = {
         }
     },
     removeAllListeners:function(eventName){
-        window.ReactNativeWebView.postMessage(JSON.stringify(
-            this.type+"|removeEventListener|"+eventName.toString()
-        ));
+        window.ReactNativeWebView.postMessage(this.type+"|removeEventListener|"+eventName.toString());
 
         this.listens[eventName] = []
+    },
+    emit:function(eventName,payload){
+
     }
 };
 
-Object.defineProperties(rn,{
-    BackHandler:{
-        get:function(){
-            rn.type = "BackHandler";
-            return rn
-        }
-    }
-});
+// TODO:It will be changed just like EventTarget
+// Object.defineProperties(rn,{
+//     BackHandler:{
+//         get:function(){
+//             rn.type = "BackHandler";
+//             return rn
+//         }
+//     }
+// });
